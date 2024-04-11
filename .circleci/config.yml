@@ -3,7 +3,7 @@ version: 2.1
 jobs:
     build:
         docker:
-            - image: docker:19.03.12 # Docker image to use
+            - image: docker:24.0.2 # Docker image to use
 
         steps:
             - checkout # Checkout your code repository
