@@ -4,15 +4,42 @@ jobs:
     build:
         docker:
             - image: docker:24.0.2 # Docker image to use
-
         steps:
             - checkout # Checkout your code repository
             - setup_remote_docker
-
             - run:
                   name: Build Docker image
                   command: docker build -t dockercloud101/docker-react -f Dockerfile.dev .
-
             - run:
                   name: Run tests in Docker container
                   command: docker run -e CI=true dockercloud101/docker-react npm run test
+
+    deploy:
+        docker:
+            - image: amazon/aws-cli # Use the Amazon AWS CLI image
+        steps:
+            - checkout
+            - setup_remote_docker
+            - run:
+                  name: Deploy to Elastic Beanstalk
+                  command: |
+                      aws configure set region us-east-1
+                      aws elasticbeanstalk create-application-version --application-name 
+                      frontend --version-label $CIRCLE_SHA1 --source-bundle 
+                      S3Bucket=elasticbeanstalk-us-east-1-975049888229,S3Key=frontend/$CIRCLE_SHA1.zip
+                      aws elasticbeanstalk update-environment --environment-name Frontend-env --version-label $CIRCLE_SHA1
+            - run:
+                  name: Access Keys
+                  command: echo $AWS_ACCESS_KEY, $AWS_SECRET_KEY
+
+workflows:
+    version: 2
+    build-and-deploy:
+        jobs:
+            - build
+            - deploy:
+                  requires:
+                      - build
+                  filters:
+                      branches:
+                          only: master
