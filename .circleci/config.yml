@@ -24,9 +24,9 @@ jobs:
                   name: Deploy to Elastic Beanstalk
                   command: |
                       aws configure set region us-east-1
-                      aws elasticbeanstalk create-application-version --application-name frontend 
-                      --version-label $CIRCLE_SHA1 --source-bundle S3Bucket=elasticbeanstalk-us-east-1-975049888229,S3Key=frontend/$CIRCLE_SHA1.zip
+                      aws elasticbeanstalk create-application-version --application-name frontend --version-label $CIRCLE_SHA1 --source-bundle S3Bucket=elasticbeanstalk-us-east-1-975049888229,S3Key=frontend/$CIRCLE_SHA1.zip
                       aws elasticbeanstalk update-environment --environment-name Frontend-env --version-label $CIRCLE_SHA1
+
             - run:
                   name: Access Keys
                   command: echo $AWS_ACCESS_KEY, $AWS_SECRET_KEY
